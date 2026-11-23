@@ -1,0 +1,92 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<div class="container site-main">
+    <div class="cart-page-header">
+        <h1>Ваша корзина</h1>
+        {% if total_quantity > 0 %}
+            <p class="cart-subtitle">Товаров в корзине: <strong>{{ total_quantity }}</strong></p>
+        {% endif %}
+    </div>
+
+    {% if items %}
+        <div class="cart-content-grid">
+            <!-- Список товаров (Таблица / Карточки) -->
+            <div class="cart-items-container">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                            <th>Итого</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr class="cart-item-row">
+                            <td class="product-info-cell">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img">
+                                {% else %}
+                                    <div class="cart-item-img-placeholder">📦</div>
+                                {% endif %}
+                                <div class="product-title-wrap">
+                                    <span class="product-name">{{ item.product.name }}</span>
+                                    {% if item.product.category %}
+                                        <span class="product-category">{{ item.product.category.name }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="price-cell">
+                                {{ item.product.price }} ₽
+                            </td>
+                            <td class="quantity-cell">
+                                <!-- Здесь можно добавить форму изменения количества, если требуется -->
+                                <span class="quantity-badge">{{ item.quntity }}</span>
+                            </td>
+                            <td class="total-cell">
+                                <strong>{{ item.item_total }} ₽</strong>
+                            </td>
+                            <td class="action-cell">
+                                <!-- Кнопка удаления товара из корзины (пример) -->
+                                <a href="#" class="remove-item-btn" title="Удалить товар">🗑️</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Блок итогов и оформления заказа -->
+            <div class="cart-summary-card">
+                <h3>Ваш заказ</h3>
+                <div class="summary-row">
+                    <span>Товары ({{ total_quantity }}):</span>
+                    <span>{{ total_price }} ₽</span>
+                </div>
+                <div class="summary-row">
+                    <span>Доставка:</span>
+                    <span class="free-shipping">Бесплатно</span>
+                </div>
+                <hr class="summary-divider">
+                <div class="summary-row total-row">
+                    <span>Итого к оплате:</span>
+                    <span class="final-price">{{ total_price }} ₽</span>
+                </div>
+                
+                <a href="{% url 'create_order' %}" class="checkout-btn">Оформить заказ</a>
+                <a href="{% url 'main' %}" class="continue-shopping-link">← Продолжить покупки</a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Состояние пустой корзины -->
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Ваша корзина пуста</h2>
+            <p>Но это легко исправить! Выберите товары в нашем каталоге.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

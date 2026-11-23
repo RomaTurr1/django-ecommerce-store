@@ -1,0 +1,127 @@
+{% extends "main/base.html" %}
+
+{% block title %}Оформление заказа{% endblock title %}
+
+{% block content %}
+<div class="container site-main">
+    <div class="cart-page-header">
+        <h1>Оформление заказа</h1>
+        <p class="cart-subtitle">Проверьте состав заказа и заполните контактные данные</p>
+    </div>
+
+    <!-- 3. Состав заказа перед оформлением -->
+    <div class="order-summary-section" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; margin-bottom: 15px; color: #212529;">Состав заказа</h2>
+        <div class="cart-items-container">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Стоимость</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr class="cart-item-row">
+                        <td class="product-info-cell">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-img">
+                            {% else %}
+                                <div class="cart-item-img-placeholder">📦</div>
+                            {% endif %}
+                            <div class="product-title-wrap">
+                                <span class="product-name">{{ item.product.name }}</span>
+                                {% if item.product.category %}
+                                    <span class="product-category">{{ item.product.category.name }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="price-cell">
+                            {{ item.product.price }} ₽
+                        </td>
+                        <td class="quantity-cell">
+                            <span class="quantity-badge">{{ item.quantity }} шт.</span>
+                        </td>
+                        <td class="total-cell">
+                            <strong>{{ item.item_total }} ₽</strong>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #f8f9fa; font-weight: bold;">
+                        <td colspan="3" style="padding: 15px 20px; text-align: right; font-size: 16px;">Общая сумма:</td>
+                        <td style="padding: 15px 20px; font-size: 18px; color: #ff6b6b; white-space: nowrap;">
+                            {{ total_price }} ₽
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Форма оформления заказа -->
+    <div class="order-form-container" style="background: #ffffff; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); max-width: 700px;">
+        <h2 style="font-size: 20px; margin-bottom: 20px; color: #212529;">Контактные данные</h2>
+        
+        {% if error %}
+            <div style="background-color: #ffe3e3; color: #c92a2a; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+                {% for field in form %}
+                    <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                        <label for="{{ field.id_for_label }}" style="font-weight: 600; font-size: 14px; color: #495057;">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span style="color: #fa5252;">*</span>
+                            {% else %}
+                                <span style="color: #868e96; font-weight: normal; font-size: 12px;">(необязательно)</span>
+                            {% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: #fa5252; font-size: 13px;">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small style="color: #868e96; font-size: 12px;">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="checkout-btn" style="border: none; cursor: pointer; font-size: 16px; margin-top: 10px;">
+                    Подтвердить и оформить заказ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+.form-input:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+}
+</style>
+{% endblock content %}

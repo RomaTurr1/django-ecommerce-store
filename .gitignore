@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+venv/
+env/
+ENV/
+.env
+
+# SQLite
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# Media files
+media/
