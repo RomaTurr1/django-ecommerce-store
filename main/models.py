@@ -35,3 +35,35 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class Review(models.Model):
+    RATING_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Товар'
+    )
+    author = models.CharField(max_length=100, verbose_name='Имя автора')
+    rating = models.PositiveSmallIntegerField(
+        choices=RATING_CHOICES,
+        verbose_name='Оценка'
+    )
+    text = models.TextField(verbose_name='Текст отзыва')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+
+    def __str__(self):
+        return f"Отзыв от {self.author} на {self.product.name} ({self.rating}/5)"

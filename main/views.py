@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Category, Product
+from .models import Category, Product, Review
+from .forms import ReviewForm
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q # ~ | &
 from django.views.decorators.http import require_POST
@@ -14,7 +15,6 @@ def index(request):
     categories = Category.objects.all()
 
     if category != "all":
-        # ct = get_object_or_404(Category, slug=category)
         products = products.filter(category__slug=category)
 
     context = {
@@ -53,8 +53,22 @@ class ProductListView(ListView):
 
 def product_detail(request, pk, slug):
     product = get_object_or_404(Product, pk=pk, slug=slug)
+    reviews = product.reviews.all().order_by('-created_at')
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.save()
+            return redirect('product_detail', pk=product.pk, slug=product.slug)
+    else:
+        form = ReviewForm()
+
     context = {
-        "product": product
+        "product": product,
+        "reviews": reviews,
+        "form": form,
     }
     return render(request, "main/product_detail.html", context)
 
